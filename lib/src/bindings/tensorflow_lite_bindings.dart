@@ -10,13 +10,7 @@ const String _libName = 'tensorflowlite_c';
 /// The dynamic library in which the symbols for [UserBindings] can be found.
 final DynamicLibrary _dylib = () {
   if (Platform.isMacOS || Platform.isIOS) {
-    final rootPath = Directory(
-      Platform.resolvedExecutable,
-    ).parent.parent.path;
-    print('===> $rootPath/Frameworks/lib$_libName.dylib');
-    return DynamicLibrary.open(
-      '$rootPath/Frameworks/lib$_libName.dylib',
-    );
+    return DynamicLibrary.open('lib$_libName.dylib');
   }
   if (Platform.isAndroid || Platform.isLinux) {
     return DynamicLibrary.open('lib$_libName.so');
