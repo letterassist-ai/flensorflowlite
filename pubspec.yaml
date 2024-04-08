@@ -1,0 +1,36 @@
+name: flensorflowlite
+description: "Flutter plugin for the TensorFlow lite ML platform."
+version: 0.0.1
+homepage: "https://github.com/letterassist-ai/flensorflowlite"
+
+environment:
+  sdk: '>=3.3.3 <4.0.0'
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  plugin_platform_interface: ^2.0.2
+  ffi: ^2.1.2
+  quiver: ^3.2.1
+
+dev_dependencies:
+  ffigen: ^11.0.0
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        ffiPlugin: true
+      ios:
+        ffiPlugin: true
+      linux:
+        ffiPlugin: true
+      macos:
+        ffiPlugin: true
+      windows:
+        ffiPlugin: true
