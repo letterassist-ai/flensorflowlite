@@ -20,7 +20,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   device_info_plus: ce1b7762849d3ec103d0e0517299f2db7ad60720
-  flensorflowlite: a15fb0f680c1ef272bf26905c28db572437ba9ab
+  flensorflowlite: 8a2a9b4d122a9b3130f3319857e79455249177e7
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
 
 PODFILE CHECKSUM: 236401fc2c932af29a9fcf0e97baeeb2d750d367

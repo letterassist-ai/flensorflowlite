@@ -3,6 +3,11 @@
 # Run `pod lib lint flensorflowlite.podspec` to validate before publishing.
 #
 
+# When running `pod install` the PLATFORM_NAME environment variable should be set
+if ENV['PLATFORM_NAME'] != 'iphonesimulator' && ENV['PLATFORM_NAME'] != 'iphoneos'
+  raise "\n\n*** Environment variable PLATFORM_NAME is not set to 'iphonesimulator' or 'iphoneos'! ****\n\n"
+end
+
 # Rebuid Tensorflow Lite C library if does not exist. This requires
 # the pod install to be run twice in order for the build library
 # to be included in the final application build.
@@ -38,7 +43,7 @@ Flutter Tensorflow Lite FFI plugin library.
     :execution_position => :before_compile
   }
 
-  s.vendored_libraries = "libtensorflowlite_c-#{ENV["PLATFORM_NAME"]}.dylib"
+  s.ios.vendored_libraries = "libtensorflowlite_c-#{ENV['PLATFORM_NAME']}.dylib"
 
   s.dependency 'Flutter'
   s.platform = :ios, '17.4'
