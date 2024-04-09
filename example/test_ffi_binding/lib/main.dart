@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flensorflowlite/flensorflowlite.dart' as flensorflowlite;
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  flensorflowlite.initTensorFlowLightBindings().then((_) {
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatefulWidget {

@@ -8,14 +8,12 @@
 # to be included in the final application build.
 build_tensorflow_lite_c = <<-EOS
 set -e
-if [[ ! -e ${PODS_TARGET_SRCROOT}/libtensorflowlite_c.dylib ]]; then
-  plugin_src_root="$(cd -P $(dirname ${PODS_TARGET_SRCROOT}) && pwd)"
-  source ${plugin_src_root}/src/scripts/build-apple.sh
-
-  set +x
-  echo "\n\n**** The Tensorflow Lite C has been built and saved to:"
-  echo "****     => $(cd -P ${PODS_TARGET_SRCROOT} && pwd)."
-  echo "****\n**** Please re-run a clean build to add library to application.\n\n"
+PLATFORM_LIBRARY="$(cd -P ${PODS_TARGET_SRCROOT} && pwd)/libtensorflowlite_c-${PLATFORM_NAME}.dylib"
+if [[ ! -e ${PLATFORM_LIBRARY} ]]; then
+  echo "\n\n**** The Tensorflow Lite C library has not been built. It needs to"
+  echo "**** be built manually and should exist in the following location."
+  echo "****     => ${PLATFORM_LIBRARY}"
+  exit 1
 fi
 EOS
 
@@ -28,22 +26,22 @@ Flutter Tensorflow Lite FFI plugin library.
                        DESC
   s.homepage         = 'https://github.com/tensorflow/flutter-tflite'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = { 'LetterAssist, LLC' => 'mevan.samaratunga@letterassist.ai' }
 
   s.source              = { :path => '.' }
   s.source_files        = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
 
   s.script_phase = {
-    :name => 'Build Tensorflow Lite Source',
+    :name => 'Check for Tensorflow Lite library',
     :script => build_tensorflow_lite_c,
     :execution_position => :before_compile
   }
 
-  s.vendored_libraries = 'libtensorflowlite_c.dylib'
+  s.vendored_libraries = "libtensorflowlite_c-#{ENV["PLATFORM_NAME"]}.dylib"
 
   s.dependency 'FlutterMacOS'
-  s.platform = :osx, '10.11'
+  s.platform = :osx, '14.4'
 
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'

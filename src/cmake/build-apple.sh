@@ -1,9 +1,6 @@
 #!/bin/sh
 set -eox pipefail
 
-MIN_IPHONEOS_VERSION=11.0
-MIN_MACOSX_VERSION=14.0
-
 #
 # XCode build sets PLATFORM_NAME to the
 # target platform to build for
@@ -42,11 +39,11 @@ if [[ ! -d ${plugin_src_root} ]]; then
   exit 1
 fi
 
+libtensorflowlite_dylib="libtensorflowlite_c-${PLATFORM_NAME}.dylib"
+
 build_library() {
   local platform=$1
   local arch=$2
-
-  local platform_build_arch
 
   local platform_build_dir=${plugin_build_dir}/${platform}/build
   if [[ -d ${platform_build_dir} ]]; then
@@ -63,53 +60,54 @@ build_library() {
 
   # Create an Apple toolchain file
 
-  local sdk_path=`xcrun --sdk $platform --show-sdk-path`
-  local sdk_version=$(echo "$(basename ${sdk_path})" | awk -F'[a-zA-Z.]+' '{print $2 "." $3}')
-  local clang=`xcrun --sdk $platform --find clang`
-  local clang_plusplus=`xcrun --sdk $platform --find clang++`
-  local target=""
+  if [[ (! ' arm64 x86_64 ' =~ $arch) ]]; then
+    echo "Unsupported architecture: $arch"
+    exit 1
+  fi
 
+  local sdk_path=`xcrun --sdk $platform --show-sdk-path`
+  local min_osx_version=$(echo $sdk_path | sed -E 's/^.*[a-zA-Z]([0-9\.]+)\.sdk/\1/')
+
+  local build_platform
   case $platform in
     macosx)
-      target="-target ${arch}-apple-macos${MIN_MACOSX_VERSION}"
+      if [[ $arch == "arm64" ]]; then
+        build_platform="MAC_ARM64"
+      else
+        build_platform="MAC"
+      fi
       ;;
     iphonesimulator)
-      target="-target ${arch}-apple-ios${MIN_IPHONEOS_VERSION}-simulator"
+      if [[ $arch == "arm64" ]]; then
+        build_platform="SIMULATORARM64"
+      else
+        build_platform="SIMULATOR64"
+      fi
       ;;
     iphoneos)
-      target="-target ${arch}-apple-ios${MIN_IPHONEOS_VERSION}"
+      if [[ $arch == "arm64" ]]; then
+        build_platform="OS64"
+      else
+        echo "Unsupported architecture for iphoneos: $arch"
+        exit 1
+      fi
       ;;
     *)
       echo "Unsupported platform: $platform"
       exit 1
       ;;
   esac
-  if [[ (! ' arm64 x86_64 ' =~ $arch) ]]; then
-    echo "Unsupported architecture: $arch"
-    exit 1
-  fi
 
-  local cmake_toolchain_file=${platform_build_dir}/toolchain-${platform}-${arch}.cmake
-  cat <<EOF >${cmake_toolchain_file}
-if(DARWIN_TOOLCHAIN_INCLUDED)
-  return()
-endif(DARWIN_TOOLCHAIN_INCLUDED)
-set(DARWIN_TOOLCHAIN_INCLUDED true)
-
-set(CMAKE_SYSTEM_NAME Darwin)
-set(CMAKE_OSX_SYSROOT $sdk_path)
-set(CMAKE_OSX_ARCHITECTURES $arch CACHE INTERNAL "" FORCE)
-set(CMAKE_SYSTEM_PROCESSOR $arch CACHE INTERNAL "" FORCE)
-set(CMAKE_C_COMPILER $clang)
-set(CMAKE_CXX_COMPILER $clang_plusplus)
-set(CMAKE_C_FLAGS "\${CMAKE_C_FLAGS} $target -isysroot $sdk_path")
-set(CMAKE_CXX_FLAGS "\${CMAKE_CXX_FLAGS} $target -isysroot $sdk_path")
-EOF
+  local cmake_toolchain_file=${plugin_src_root}/cmake/apple.toolchain.cmake
 
   # Configure and build the library
 
   cmake -S ${plugin_src_root} -B ${platform_build_dir} \
     -DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} \
+    -DPLATFORM=${build_platform} \
+    -DENABLE_VISIBILITY=ON \
+    -DDEPLOYMENT_TARGET=${min_osx_version} \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
     -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${platform_dist_dir} \
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${platform_dist_dir}
 
@@ -191,7 +189,7 @@ create_framework() {
   local platform_dist_dir=${plugin_build_dir}/${platform}/dist
   local ouput_file=${framework_dir}/Versions/A/${framework_name}
 
-  create_platform_library "${platform_dist_dir}" "libtensorflowlite_c.dylib" "${ouput_file}"
+  create_platform_library "${platform_dist_dir}" "${libtensorflowlite_dylib}" "${ouput_file}"
 
   echo "Built framework: ${framework_name}"
 }
@@ -213,5 +211,5 @@ esac
 
 create_platform_library \
   "${plugin_build_dir}/${PLATFORM_NAME}/dist" \
-  "libtensorflowlite_c.dylib" \
-  "${PODS_TARGET_SRCROOT}/libtensorflowlite_c.dylib"
+  "${libtensorflowlite_dylib}" \
+  "${PODS_TARGET_SRCROOT}/${libtensorflowlite_dylib}"

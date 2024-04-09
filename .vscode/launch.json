@@ -3,7 +3,7 @@
         {
             "name": "flensorflowlite example",
             "program": "lib/main.dart",
-            "cwd": "example",
+            "cwd": "example/test_ffi_binding",
             "request": "launch",
             "type": "dart"
         }

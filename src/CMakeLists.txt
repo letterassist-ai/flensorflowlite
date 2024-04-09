@@ -35,7 +35,30 @@ if(NOT tensorflow_POPULATED)
 endif()
 FetchContent_GetProperties(tensorflow)
 
-add_subdirectory(${tensorflow_SOURCE_DIR}/tensorflow/lite/c "${CMAKE_BINARY_DIR}/tensorflow")
+# Apply patches to the TensorFlow CMake build tree where necessary
+if (APPLE AND DEFINED ENV{PLATFORM_NAME})
+  # Updated tensorflowlite_c CMakeLists.txt to
+  # build a named shared library for apple only
+  configure_file(
+    ${CMAKE_SOURCE_DIR}/cmake/patch.apple.tensorflow.CMakeLists_txt
+    ${tensorflow_SOURCE_DIR}/tensorflow/lite/c/CMakeLists.txt
+    COPYONLY
+  )
+  # Fixes error "install TARGETS given no BUNDLE
+  # DESTINATION for MACOSX_BUNDLE executable"
+  configure_file(
+    ${CMAKE_SOURCE_DIR}/cmake/patch.apple.tensorflow.flatbuffers_cmake
+    ${tensorflow_SOURCE_DIR}/tensorflow/lite/tools/cmake/modules/flatbuffers.cmake
+    COPYONLY
+  )
+  set(TENSORFLOW_LITE_C_LIB "tensorflowlite_c-$ENV{PLATFORM_NAME}")
+endif()
+
+# Create the TensorFlow Lite C library build target
+add_subdirectory(
+  ${tensorflow_SOURCE_DIR}/tensorflow/lite/c
+  "${CMAKE_BINARY_DIR}/tensorflow"
+)
 
 if (APPLE AND DEFINED ENV{PLATFORM_NAME})
   set(OSX_PLATFORM $ENV{PLATFORM_NAME})
@@ -44,8 +67,10 @@ if (APPLE AND DEFINED ENV{PLATFORM_NAME})
   set(CMAKE_LINK_LIBRARY_USING_FRAMEWORK TRUE)
 
   # For iOS ensure core frameworks are linked
-  target_link_libraries(tensorflowlite_c "-framework Foundation")
-  target_link_libraries(tensorflowlite_c "-framework CoreFoundation")
+  target_link_libraries(${TENSORFLOW_LITE_C_LIB} "-framework Foundation")
+  target_link_libraries(${TENSORFLOW_LITE_C_LIB} "-framework CoreFoundation")
+  target_compile_definitions(${TENSORFLOW_LITE_C_LIB} PUBLIC DART_SHARED_LIB)
+else()
+  target_compile_definitions(tensorflowlite_c PUBLIC DART_SHARED_LIB)
 endif()
 
-target_compile_definitions(tensorflowlite_c PUBLIC DART_SHARED_LIB)

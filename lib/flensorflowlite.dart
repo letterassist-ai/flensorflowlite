@@ -8,6 +8,7 @@ library tflite_flutter;
 import 'package:ffi/ffi.dart';
 import 'package:flensorflowlite/src/bindings/tensorflow_lite_bindings.dart';
 
+export 'src/bindings/tensorflow_lite_bindings.dart';
 export 'src/delegate.dart';
 export 'src/delegates/gpu_delegate.dart';
 export 'src/delegates/metal_delegate.dart';
