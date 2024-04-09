@@ -3,9 +3,6 @@
 # Run `pod lib lint tflite_flutter.podspec` to validate before publishing.
 #
 
-# When running `pod install` the PLATFORM_NAME environment variable should be set
-raise "\n\n*** Environment variable PLATFORM_NAME is not set to 'macosx'! ****\n\n" if ENV['PLATFORM_NAME'] != 'macosx'
-
 # Rebuid Tensorflow Lite C library if does not exist. This requires
 # the pod install to be run twice in order for the build library
 # to be included in the final application build.
@@ -41,7 +38,7 @@ Flutter Tensorflow Lite FFI plugin library.
     :execution_position => :before_compile
   }
 
-  s.vendored_libraries = "libtensorflowlite_c-#{ENV["PLATFORM_NAME"]}.dylib"
+  s.vendored_libraries = "libtensorflowlite_c-macosx.dylib"
 
   s.dependency 'FlutterMacOS'
   s.platform = :osx, '14.4'
