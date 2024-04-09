@@ -1,11 +1,24 @@
 {
     "configurations": [
         {
-            "name": "flensorflowlite example",
+            "name": "flensorflowlite test_ffi_binding",
             "program": "lib/main.dart",
             "cwd": "example/test_ffi_binding",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "env": {
+                "PLATFORM_NAME": "macosx"
+            }
+        },
+        {
+            "name": "flensorflowlite text_classification",
+            "program": "lib/main.dart",
+            "cwd": "example/text_classification",
+            "request": "launch",
+            "type": "dart",
+            "env": {
+                "PLATFORM_NAME": "macosx"
+            }
         }
     ]
 }
