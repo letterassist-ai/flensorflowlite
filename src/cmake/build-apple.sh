@@ -39,7 +39,8 @@ if [[ ! -d ${plugin_src_root} ]]; then
   exit 1
 fi
 
-libtensorflowlite_dylib="libtensorflowlite_c-${PLATFORM_NAME}.dylib"
+libname="libtensorflowlite_c-${PLATFORM_NAME}"
+libtensorflowlite_dylib="${libname}.dylib"
 
 build_library() {
   local platform=$1
@@ -160,7 +161,7 @@ create_framework() {
   local platform=$1
 
   # Create framework
-  local framework_name="flensorflowlite"
+  local framework_name="${libname}"
 
   framework_dir=${PODS_TARGET_SRCROOT}/${framework_name}.framework
   rm -rf ${framework_dir}
