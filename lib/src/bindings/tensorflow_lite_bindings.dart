@@ -38,11 +38,11 @@ Future<void> initTensorFlowLightBindings() async {
         'lib$_libName.so',
       ),
     );
-    tfliteBindingGpu = TensorFlowLiteBindings(
-      DynamicLibrary.open(
-        'libtensorflowlite_gpu_jni.so',
-      ),
-    );
+    // tfliteBindingGpu = TensorFlowLiteBindings(
+    //   DynamicLibrary.open(
+    //     'libtensorflowlite_gpu_jni.so',
+    //   ),
+    // );
   } else if (Platform.isMacOS) {
     tfliteBinding = TensorFlowLiteBindings(
       DynamicLibrary.open(
