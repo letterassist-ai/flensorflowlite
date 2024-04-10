@@ -52,14 +52,15 @@ class Classifier {
       options.addDelegate(XNNPackDelegate());
     }
 
-    // doesn't work on emulator
+    // doesn't work on emulator or simulator
+
     // if (Platform.isAndroid) {
     //   options.addDelegate(GpuDelegateV2());
     // }
 
-    if (Platform.isIOS) {
-      options.addDelegate(GpuDelegate());
-    }
+    // if (Platform.isIOS) {
+    //   options.addDelegate(GpuDelegate());
+    // }
 
     // Creating the interpreter using Interpreter.fromAsset
     _interpreter = await Interpreter.fromAsset(_modelFile, options: options);
