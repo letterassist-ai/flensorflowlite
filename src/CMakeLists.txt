@@ -17,7 +17,7 @@ project(${LIB}_library LANGUAGES C CXX)
 get_filename_component(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/.. ABSOLUTE)
 
 # Set policies
-cmake_policy(SET CMP0135 NEW) # Allow downloading files without DOWNLOAD_EXTRACT_TIMESTAMP option
+# cmake_policy(SET CMP0135 NEW) # Allow downloading files without DOWNLOAD_EXTRACT_TIMESTAMP option
 cmake_policy(SET CMP0079 NEW) # Allow setting of target link libraries for builds in subdirectories
 
 # A future Abseil release will default ABSL_PROPAGATE_CXX_STD to ON,
