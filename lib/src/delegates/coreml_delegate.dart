@@ -17,7 +17,6 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 import 'package:quiver/check.dart';
-import 'package:flensorflowlite/src/bindings/tensorflow_lite_bindings.dart';
 import 'package:flensorflowlite/src/bindings/tensorflow_lite_bindings_generated.dart';
 import 'package:flensorflowlite/flensorflowlite.dart';
 

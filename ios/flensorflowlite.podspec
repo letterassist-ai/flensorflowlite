@@ -38,6 +38,10 @@ Flutter Tensorflow Lite FFI plugin library.
     :execution_position => :before_compile
   }
 
+  #
+  # Comment/Uncomment one of the following lines to include the
+  # Tensorflow Lite C library for the correct runtime platform.
+  #
   s.ios.vendored_libraries = "libtensorflowlite_c-iphonesimulator.dylib"
   # s.ios.vendored_libraries = "libtensorflowlite_c-iphoneos.dylib"
 

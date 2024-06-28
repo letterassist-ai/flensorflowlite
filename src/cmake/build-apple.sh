@@ -2,15 +2,6 @@
 set -eox pipefail
 
 #
-# XCode build sets PLATFORM_NAME to the
-# target platform to build for
-#
-if [[ -z $PLATFORM_NAME ]]; then
-  echo "Apple XCode build PLATFORM_NAME is not set"
-  exit 1
-fi
-
-#
 # Note: SRCROOT == <Flutter App>/macos/Pods
 #
 if [[ -z $SRCROOT ]]; then
@@ -24,6 +15,15 @@ fi
 #
 if [[ -z $PODS_TARGET_SRCROOT ]]; then
   echo "Apple XCode build PODS_TARGET_SRCROOT is not set"
+  exit 1
+fi
+
+#
+# XCode build sets PLATFORM_NAME to the
+# target platform to build for
+#
+if [[ -z $PLATFORM_NAME ]]; then
+  echo "Apple XCode build PLATFORM_NAME is not set"
   exit 1
 fi
 
@@ -69,6 +69,8 @@ build_library() {
   local sdk_path=`xcrun --sdk $platform --show-sdk-path`
   local min_osx_version=$(echo $sdk_path | sed -E 's/^.*[a-zA-Z]([0-9\.]+)\.sdk/\1/')
 
+  local cmake_options=()
+
   local build_platform
   case $platform in
     macosx)
@@ -77,6 +79,7 @@ build_library() {
       else
         build_platform="MAC"
       fi
+      cmake_options+=(-DTFLITE_ENABLE_GPU=ON)
       ;;
     iphonesimulator)
       if [[ $arch == "arm64" ]]; then
@@ -84,6 +87,7 @@ build_library() {
       else
         build_platform="SIMULATOR64"
       fi
+      cmake_options+=('')
       ;;
     iphoneos)
       if [[ $arch == "arm64" ]]; then
@@ -92,6 +96,7 @@ build_library() {
         echo "Unsupported architecture for iphoneos: $arch"
         exit 1
       fi
+      cmake_options+=(-DTFLITE_ENABLE_METAL=ON)
       ;;
     *)
       echo "Unsupported platform: $platform"
@@ -110,7 +115,8 @@ build_library() {
     -DDEPLOYMENT_TARGET=${min_osx_version} \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
     -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${platform_dist_dir} \
-    -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${platform_dist_dir}
+    -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${platform_dist_dir} \
+    ${cmake_options[@]}
 
   cmake --build ${platform_build_dir} -j
   cp -f ${platform_build_dir}/tensorflow/tensorflow-lite/libtensorflow-lite.a ${platform_dist_dir}

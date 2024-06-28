@@ -59,7 +59,7 @@ class Classifier {
     // }
 
     // if (Platform.isIOS) {
-    //   options.addDelegate(GpuDelegate());
+    //   options.addDelegate(CoreMlDelegate());
     // }
 
     // Creating the interpreter using Interpreter.fromAsset
